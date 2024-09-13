@@ -1,4 +1,4 @@
-# MULT 25-610 Smart Buildings-Sustainibility and Efficiency
+# MULT 25-610 Smart Buildings-Sustainability and Efficiency
 ## Siemens
 ## Worldwide building operations account for 30% of the total energy use and 8% of direct carbon emissions. Advanced building control systems offer a solution to maintain healthy, safe, and energy-efficient buildings globally. These systems, though intricate, comprise various sub-systems that must function seamlessly as a unified whole. Currently, the standard approach to upkeep involves allowing the system to malfunction, only intervening to repair it once an issue arises. Siemens aims to transform this reactive maintenance model into a predictive one. This entails identifying potential failures before they jeopardize occupant safety, comfort, or escalate energy consumption. The primary goal of this project is to leverage operational data from the building control system to anticipate impending system failures.
 The directory structure in this GitHub is to allow the project to have all its resources self-contained.
