@@ -1,4 +1,3 @@
-
 import numpy as np
 import pandas as pd
 import torch
@@ -11,64 +10,44 @@ import os
 import pickle
 from sklearn.model_selection import KFold
 
-# Prompt the user to choose between training or testing mode
-mode = input("Enter mode (train/test): ").strip().lower()
 
-if mode == "train":
-    train_filepath = input("Enter filepath of training data: ")
-    model_save_path = input("Enter filepath to save trained model: ")
-elif mode == "test":
-    model_load_path = input("Enter filepath of saved model: ")
-    test_filepaths = input("Enter filepath(s) of testing dataset(s), comma separated: ").split(',')
-    predictions_output_path = input("Enter filepath to save predictions CSV: ")
-else:
-    raise ValueError("Invalid mode. Please enter 'train' or 'test'.")
-
-# Function to load dataset
+# Functions and Classes should be defined outside `if __name__ == "__main__"`
 def load_data(filepath, chunk_size=10000):
     df_chunks = pd.read_csv(filepath, parse_dates=['Date'], chunksize=chunk_size)
     df = pd.concat(df_chunks, ignore_index=True)  
     df.set_index('Date', inplace=True)
     return df
 
-# Function to sample half the dataset with equal representation from each month
+
 def sample_data(df):
     df['Month'] = df.index.month  # Extract month from the index
     sampled_df = df.groupby('Month').apply(lambda x: x.sample(frac=0.5, random_state=42), include_groups=False).reset_index(drop=True)
     return sampled_df
 
-# Preprocessing function
+
 def preprocess_data(df, scaler=None, fit_scaler=False):
     feature_cols = ["Chilled Water Valve (%)", "Heating Coil Valve (%)", "Cooling Coil Valve (%)", 
                     "Outdoor Air Temp (°F)", "Lab 409 Room Temp (°F)", "Discharge Air Temp (°F)", 
                     "Lab 409 Room Temp Deviation From Setpoint (°F)"]
     binary_cols = ["Occupancy Status (-)", "Fan Start/Stop Command (-)", "Heat Cool Mode (-)"]
-    
+
     if fit_scaler:
         scaler = MinMaxScaler()
         df[feature_cols] = scaler.fit_transform(df[feature_cols])
     else:
         df[feature_cols] = scaler.transform(df[feature_cols])
-    
+
     df['Hour_sin'] = np.sin(2 * np.pi * df['Hour of the Day'] / 24)
     df['Hour_cos'] = np.cos(2 * np.pi * df['Hour of the Day'] / 24)
     df['Day_sin'] = np.sin(2 * np.pi * df['Day of the Week'] / 7)
     df['Day_cos'] = np.cos(2 * np.pi * df['Day of the Week'] / 7)
     df['Season_sin'] = np.sin(2 * np.pi * df['Season'].factorize()[0] / 4)
     df['Season_cos'] = np.cos(2 * np.pi * df['Season'].factorize()[0] / 4)
-    
+
     selected_features = feature_cols + binary_cols + ['Hour_sin', 'Hour_cos', 'Day_sin', 'Day_cos', 'Season_sin', 'Season_cos']
     return df[selected_features].astype(np.float16), scaler
 
-# DataLoader function
-def create_dataloader(data, batch_size=128, sequence_length=1):
-    sequences = np.array([data.values[i:i+sequence_length] for i in range(len(data) - sequence_length)])
-    tensor_data = torch.tensor(sequences, dtype=torch.float32)  # Now optimized
-    dataset = TensorDataset(tensor_data)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-
-# LSTM Autoencoder class
 class LSTMAutoencoder(nn.Module):
     def __init__(self, input_dim, sequence_length=1):
         super(LSTMAutoencoder, self).__init__()
@@ -76,7 +55,7 @@ class LSTMAutoencoder(nn.Module):
         self.encoder = nn.LSTM(input_dim, 64, batch_first=True)
         self.decoder = nn.LSTM(64, 64, batch_first=True)
         self.fc = nn.Linear(64, input_dim)
-    
+
     def forward(self, x):
         _, (hidden, _) = self.encoder(x)
         hidden = hidden.repeat(self.sequence_length, 1, 1).permute(1, 0, 2)
@@ -84,11 +63,19 @@ class LSTMAutoencoder(nn.Module):
         decoded = self.fc(decoded.reshape(-1, 64)).reshape(-1, self.sequence_length, self.fc.out_features)
         return decoded
 
+
+def create_dataloader(data, batch_size=64, sequence_length=1):
+    # Function definition was missing from the original file
+    tensor_data = torch.tensor(data.values, dtype=torch.float32).unsqueeze(1)
+    dataset = TensorDataset(tensor_data)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    return dataloader
+
+
 def train_model_kfold(train_data, model_save_path, scaler, k=5):
     input_dim = train_data.shape[1]
     device = torch.device("cpu")
     best_threshold = None
-
 
     kfold = KFold(n_splits=k, shuffle=True, random_state=42)
     fold = 1
@@ -134,7 +121,7 @@ def train_model_kfold(train_data, model_save_path, scaler, k=5):
        # Use a statistical approach to find the anomaly threshold
         mean_loss = np.mean(val_losses)
         std_loss = np.std(val_losses)
-        threshold = mean_loss + std_loss  # Set threshold at mean + 2*std
+        threshold = mean_loss + std_loss  # Set threshold at mean + std
 
         print(f" Selected threshold for Fold {fold}: {threshold}")
         fold += 1
@@ -172,6 +159,7 @@ def train_model_kfold(train_data, model_save_path, scaler, k=5):
     print(f"Scaler saved at {scaler_save_path}")
 
     return model, best_threshold
+
 
 def test_model(model_load_path, test_filepaths, predictions_output_path):
     print("Testing...")
@@ -290,8 +278,6 @@ def test_model(model_load_path, test_filepaths, predictions_output_path):
         results_df.to_csv(results_output_path, index=False)
         print(f"Metrics saved to {results_output_path}")
 
-
-
         df_predictions = pd.DataFrame({
             'Timestamp': timestamps,
             'True_Label': labels,
@@ -299,22 +285,33 @@ def test_model(model_load_path, test_filepaths, predictions_output_path):
         })
         all_results.append(df_predictions)
 
-
     final_results = pd.concat(all_results, ignore_index=True)
     final_results.to_csv(predictions_output_path, index=False)
     print(f"All predictions saved to {predictions_output_path}")
 
 
-# Main logic
-if mode == "train":
-    train_df = load_data(train_filepath)
-    train_df = sample_data(train_df)  # Reduce dataset size while maintaining equal distribution
-    train_data, scaler = preprocess_data(train_df, fit_scaler=True)
+# The script execution should only happen within this block
+if __name__ == "__main__":
+    # Prompt the user to choose between training or testing mode
+    mode = input("Enter mode (train/test): ").strip().lower()
 
-    train_model_kfold(train_data, model_save_path, scaler, k=5)
-
-elif mode == "test":
-    test_model(model_load_path, test_filepaths, predictions_output_path)
-
-
-
+    if mode == "train":
+        train_filepath = input("Enter filepath of training data: ")
+        model_save_path = input("Enter filepath to save trained model: ")
+        
+        # Main logic for training
+        train_df = load_data(train_filepath)
+        train_df = sample_data(train_df)  # Reduce dataset size while maintaining equal distribution
+        train_data, scaler = preprocess_data(train_df, fit_scaler=True)
+        train_model_kfold(train_data, model_save_path, scaler, k=5)
+        
+    elif mode == "test":
+        model_load_path = input("Enter filepath of saved model: ")
+        test_filepaths = input("Enter filepath(s) of testing dataset(s), comma separated: ").split(',')
+        predictions_output_path = input("Enter filepath to save predictions CSV: ")
+        
+        # Main logic for testing
+        test_model(model_load_path, test_filepaths, predictions_output_path)
+        
+    else:
+        raise ValueError("Invalid mode. Please enter 'train' or 'test'.")
