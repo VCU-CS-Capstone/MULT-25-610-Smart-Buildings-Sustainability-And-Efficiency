@@ -1,0 +1,2 @@
+Test_File,Accuracy,F1-score,Precision,Sensitivity (Recall),Specificity,Threshold Used
+/home/daniel/capstone/MULT-25-610-Smart-Buildings-Sustainability-And-Efficiency/src/test_data_n_labeled.csv,0.9768731189608744,0.0,0.0,0,0.9768731189608744,0.00028553349323312023

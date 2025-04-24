@@ -1,0 +1,3 @@
+Date,Fan Start/Stop Command (-),Lab 409 Room Temp (°F),Cooling Coil Valve (%),Discharge Air Temp (°F),Lab 409 Room Temp Deviation From Setpoint (°F),Hour of the Day,Heat Cool Mode (-),Heating Coil Valve (%),Season,Occupancy Status (-),Day of the Week,Chilled Water Valve (%),Outdoor Air Temp (°F),Label
+2022-11-11 21:45:00,1.0,68.5,0.0,69.0,3.5,21,1.0,100.0,Fall,1.0,4,0.0,71.14,F
+

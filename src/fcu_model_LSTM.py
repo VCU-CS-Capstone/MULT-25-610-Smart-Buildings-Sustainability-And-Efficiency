@@ -162,7 +162,8 @@ def train_model_kfold(train_data, model_save_path, scaler, k=5):
 
 
 def test_model(model_load_path, test_filepaths, predictions_output_path):
-    print("Testing...")
+    # Commented this out to make the output on the frontend less noisy
+    #print("Testing...")
     device = torch.device("cpu")
 
     # Load the trained model and threshold
@@ -259,7 +260,8 @@ def test_model(model_load_path, test_filepaths, predictions_output_path):
             ["Actual Fault",     fn,                     tp]
         ])
         confusion_df.to_csv(confusion_matrix_path, index=False, header=False)
-        print(f"Confusion Matrix saved to {confusion_matrix_path}")
+        #commented this out to make the frontend less noisy
+        #print(f"Confusion Matrix saved to {confusion_matrix_path}")
 
 
         # Save results to CSV (Metrics in SAME FILE)
@@ -276,7 +278,8 @@ def test_model(model_load_path, test_filepaths, predictions_output_path):
         })
 
         results_df.to_csv(results_output_path, index=False)
-        print(f"Metrics saved to {results_output_path}")
+        #commented this out to make the frontend less noisy
+        # print(f"Metrics saved to {results_output_path}")
 
         df_predictions = pd.DataFrame({
             'Timestamp': timestamps,
@@ -287,7 +290,8 @@ def test_model(model_load_path, test_filepaths, predictions_output_path):
 
     final_results = pd.concat(all_results, ignore_index=True)
     final_results.to_csv(predictions_output_path, index=False)
-    print(f"All predictions saved to {predictions_output_path}")
+    #commented this out to make the frontend less noisy
+    # print(f"All predictions saved to {predictions_output_path}")
 
 
 # The script execution should only happen within this block
@@ -315,3 +319,6 @@ if __name__ == "__main__":
         
     else:
         raise ValueError("Invalid mode. Please enter 'train' or 'test'.")
+
+
+

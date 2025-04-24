@@ -1,0 +1,2 @@
+Test_File,Accuracy,F1-score,Precision,Sensitivity (Recall),Specificity,Threshold Used
+../test_data_mixedG.csv,0.7577854671280276,0.8582995951417004,0.8548387096774194,0.8617886178861789,0.16279069767441862,0.0002595014640143792
