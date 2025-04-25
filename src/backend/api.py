@@ -110,7 +110,7 @@ def run_model():
 
         test_model(MODEL_PATH, TEST_FILES, OUTPUT_CSV)
 
-        return jsonify({"status": "success", "message": "Model trained, tested, and results saved."})
+        return jsonify({"status": "success", "message": "Model trained, and results saved."})
 
     except Exception as e:
         print("Error in /run-model:", str(e))

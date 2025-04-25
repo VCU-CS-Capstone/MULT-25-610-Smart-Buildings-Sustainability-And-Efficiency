@@ -133,7 +133,7 @@ function App() {
 
         {result && (
           <div className="mt-8 bg-green-50 border border-green-200 rounded-lg p-4">
-            <h2 className="text-xl font-semibold text-green-700 mb-2">Model Results</h2>
+            <h2 className="text-xl font-semibold text-green-700 mb-2">Model Trained</h2>
             <pre className="text-sm text-gray-800 whitespace-pre-wrap">{JSON.stringify(result, null, 2)}</pre>
           </div>
         )}
