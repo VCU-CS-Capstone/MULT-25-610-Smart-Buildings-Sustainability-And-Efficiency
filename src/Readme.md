@@ -3,11 +3,12 @@ To be structured as needed by project team.
 
 Please document here
 
-| Subdirectory Name | Description |
+## Project Structure Overview
 
-| Frontend | This directory holds all the files for the frontend main file it's held:`cd /src/HVACPredictor.jsx`. To view the dashboard in action run `npm run dev` This will display a link to the dashboard. But you will notice you will not be able to use any of the buttons, that because we need to run the backend.|
-
-| Backend | This directory holds the api file which is the vehicle that connects the frontend to the backend. To find this file: `cd /backend/api.py` to run the file: `python api.py` once that is running click link given when you run the frontend `http://localhost:5173/` should be similar to this link. Train the model by clicking train model, and then run a run test on any dataset of your choice. ![Dashboard](frontend/src/assets/dashboard.png) |
+| **Subdirectory Name** | **Description** |
+|-----------------------|-----------------|
+| **Frontend** | This directory holds all the files for the frontend. The main file is located at: `src/HVACPredictor.jsx`. <br><br>To view the dashboard in action, run:<br><br>`npm run dev`<br><br>This will display a link (e.g., `http://localhost:5173/`) to the dashboard. However, the buttons will not function yet—this is because the backend needs to be running. |
+| **Backend** | This directory contains the API file that connects the frontend to the backend.<br><br>Navigate to the file with:<br><br>`cd backend/api.py`<br><br>Run it using:<br><br>`python api.py`<br><br>Once the server is running, return to the frontend dashboard. From there, you can click **Train Model** and **Run Test** on any dataset of your choice.<br><br>![Dashboard](frontend/src/assets/dashboard.png) |
 
 | | |
 | | |
